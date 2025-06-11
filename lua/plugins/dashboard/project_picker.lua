@@ -50,14 +50,28 @@ function M.open_project_picker()
                             if input and input ~= "" then
                                 local new_path = base_dir .. input
                                 vim.fn.mkdir(new_path, "p")
-                                vim.cmd('cd ' .. new_path)
-                                vim.cmd('Neotree')
+                                vim.cmd('cd ' .. full_path)
+                                require('telescope').extensions.file_browser.file_browser({
+                                    path = full_path,
+                                    previewer = true,
+                                    layout_config = {
+                                        height = 0.9,
+                                        width = 0.9,
+                                    },
+                                })
                             end
                         end)
                     else
                         local full_path = base_dir .. selection
                         vim.cmd('cd ' .. full_path)
-                        vim.cmd('Neotree')
+                        require('telescope').extensions.file_browser.file_browser({
+                            path = full_path,
+                            previewer = true,
+                            layout_config = {
+                                height = 0.9,
+                                width = 0.9,
+                            },
+                        })
                     end
                 end)
                 return true

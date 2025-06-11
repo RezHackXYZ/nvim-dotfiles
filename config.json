@@ -1,4 +1,5 @@
 {
 	"reposDirectory": "~/Documents/repos/",
-	"dashboardAsciiArt": "/lua/plugins/dashboard/headerAscii.txt"
+	"dashboardAsciiArtFileURL": "/lua/plugins/dashboard/headerAscii.txt",
+	"dashboardFooterText": "Hey? what you looking here? get to grinding!"
 }

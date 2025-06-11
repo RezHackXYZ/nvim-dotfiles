@@ -4,7 +4,8 @@ assert(config_file, "config.json not found at " .. config_path)
 local config_content = config_file:read("*a")
 config_file:close()
 local config = vim.fn.json_decode(config_content)
-local AsciiTextc = config.dashboardAsciiArt
+local AsciiTextc = config.dashboardAsciiArtFileURL
+local footerText = config.dashboardFooterText
 
 return {
     'nvimdev/dashboard-nvim',
@@ -24,7 +25,7 @@ return {
                         key = 'o',
                     }
                 },
-                footer = { 'Hey? what you looking here? get to grinding!' },
+                footer = {footerText},
                 disable_move = true,
                 week_header = { enable = false },
                 packages = { enable = false },
