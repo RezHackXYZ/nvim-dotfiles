@@ -6,17 +6,36 @@ function M.open_project_picker()
     local actions = require('telescope.actions')
     local action_state = require('telescope.actions.state')
 
-    local base_dir = os.getenv("FOLDER_WITH_ALL_REPOS") 
+    local config_path = vim.fn.stdpath("config") .. "/config.json"
+    local config_file = io.open(config_path, "r")
+    assert(config_file, "config.json not found at " .. config_path)
+    local config_content = config_file:read("*a")
+    config_file:close()
+    local config = vim.fn.json_decode(config_content)
+    local base_dir = vim.fn.expand(config.reposDirectory)
+    assert(base_dir, "reposDirectory not set in config.json")
+
+    -- Ensure base_dir ends with a slash
+    if not base_dir:match("/$") then
+        base_dir = base_dir .. "/"
+    end
+
     local folders = scan.scan_dir(base_dir, { only_dirs = true, depth = 1 })
-    local entries = { "[ New Project]" }
+    if #folders == 0 then
+        vim.notify("No projects found in " .. base_dir, vim.log.levels.WARN)
+    end
+
+    local entries = { "[+ New Project]" }
 
     for _, folder in ipairs(folders) do
-        table.insert(entries, Path:new(folder):make_relative(base_dir))
+        -- Get the folder name only, not the full path
+        local folder_name = Path:new(folder):make_relative(base_dir)
+        table.insert(entries, folder_name)
     end
 
     require('telescope.pickers')
         .new({}, {
-            prompt_title = ' Open Or Create a Project',
+            prompt_title = 'Open Or Create a Project',
             finder = require('telescope.finders').new_table({
                 results = entries
             }),
@@ -26,13 +45,13 @@ function M.open_project_picker()
                     local selection = action_state.get_selected_entry()[1]
                     actions.close(prompt_bufnr)
 
-                    if selection == "[ New Project]" then
-                        vim.ui.input({ prompt = " Enter new project folder name: " }, function(input)
+                    if selection == "[+ New Project]" then
+                        vim.ui.input({ prompt = "Enter new project folder name: " }, function(input)
                             if input and input ~= "" then
                                 local new_path = base_dir .. input
                                 vim.fn.mkdir(new_path, "p")
                                 vim.cmd('cd ' .. new_path)
-                                vim.cmd('Neotree') -- or Telescope find_files
+                                vim.cmd('Neotree')
                             end
                         end)
                     else

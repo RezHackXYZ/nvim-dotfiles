@@ -1,3 +1,11 @@
+local config_path = vim.fn.stdpath("config") .. "/config.json"
+local config_file = io.open(config_path, "r")
+assert(config_file, "config.json not found at " .. config_path)
+local config_content = config_file:read("*a")
+config_file:close()
+local config = vim.fn.json_decode(config_content)
+local AsciiTextc = config.dashboardAsciiArt
+
 return {
     'nvimdev/dashboard-nvim',
     event = 'VimEnter',
@@ -6,21 +14,17 @@ return {
         require('dashboard').setup({
             theme = 'hyper',
             config = {
-                header = (function()
-                    local ok, content = pcall(function()
-                        return vim.fn.readfile(vim.fn.stdpath('config') .. '/lua/plugins/dashboard/headerAscii.txt')
-                    end)
-                    return ok and content or { 'Error loading header' }
-                end)(),
+                header = vim.fn.readfile(vim.fn.stdpath('config') .. AsciiTextc),
                 shortcut = {
                     {
-                        icon = ' ',
+                        icon = '󰥨 ',
                         desc = 'Open Projects',
+                        group = '@property',
                         action = require('plugins.dashboard.project_picker').open_project_picker,
                         key = 'o',
                     }
                 },
-                footer = { 'What you cooking today?' },
+                footer = { 'Hey? what you looking here? get to grinding!' },
                 disable_move = true,
                 week_header = { enable = false },
                 packages = { enable = false },
